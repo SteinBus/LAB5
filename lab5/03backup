@@ -1,0 +1,45 @@
+#!/bin/bash
+date=$(date +%F)
+Flag=0
+lastDate=$(ls ~ | grep -E "^Backup-" | sort | tail -1 | sed 's|Backup-||')
+if [ "$lastDate" == "" ]; then
+	let Flag=1
+else
+	lastRestore=$(date -d "$lastDate" +%s)
+	now=$(date -d "$date" +%s)
+	diff=($now-$lastRestore)/60/60/24
+	if [[ $diff -gt 7 ]]; then
+		let Flag=1
+	fi
+fi
+echo "$date processing" >> ~/backup-report
+sources="$(ls ~/source)"
+if [[ $Flag -ne 0 ]]; then
+	mkdir ~/Backup-"$date"
+	echo "new: Backup-$date" >> ~/backup-report
+	for sause in $sources
+	do
+		cp ~/source/"$sause" ~/Backup-"$date"
+		echo "Copied ~/source/$sause to ~/Backup-$date" >> ~/backup-report
+	done
+else
+	echo "New directory wasn't created. Modifying ~/Backup-$lastDate..." >> ~/backup-report
+	for sause in $sources
+	do
+		old=~/Backup-$lastDate/"$sause"
+		if [ -f $old ]; then
+			actualSize=$(wc -c < ~/source/"$sause");
+			backupSize=$(wc -c < $old)
+			if [[ $actualSize -ne $backupSize ]]; then
+				new=$old.$date
+				mv $old $new
+				cp ~/source/"$sause" $old
+				echo "Renamed $old to $new" >> ~/backup-report
+				echo "Copied ~/source/$sause to $old" >> ~/backup-report
+			fi
+		else
+			cp ~/source/"$sause" $old
+			echo "Copied ~/source/$sause to $old" >> ~/backup-report
+		fi
+	done
+fi

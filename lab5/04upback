@@ -1,0 +1,13 @@
+#!/bin/bash
+fresh=$(ls ~ | grep -E "^Backup-" | sort | tail -1)
+if [ ! -d ~/restore ]; then
+	mkdir ~/restore
+fi
+sources=$(ls ~/$fresh)
+for sause in $sources; do
+	if [[ ! $sause =~ ^.*\.[0-9]{4}-[0-9]{4}$ ]]; then
+		cp ~/"$fresh"/"$sause" ~/restore
+	fi
+done	
+	
+

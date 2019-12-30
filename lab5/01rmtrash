@@ -1,0 +1,16 @@
+#!/bin/bash
+
+file=$1
+T=~/.trash
+if ! [ -d "$T" ]; then
+	mkdir "$T";
+	echo 1 > "$T"/.num
+fi
+num=$(cat "$T"/.num)
+ln "$file" "$T"/"$num"
+pwd=$(pwd "$file")
+echo "$pwd"/"$file":"$T"/"$num" >> "$T"/.trash.log
+((num += 1))
+echo "$num" > "$T"/.num
+rm $pwd/$file
+

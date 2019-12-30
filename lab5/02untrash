@@ -1,0 +1,24 @@
+#!/bin/bash
+file=$1
+T=~/.trash
+deleted=$(cat "$T"/.trash.log)
+for entry in $deleted; do
+	if [[ $entry == */"$file":* ]]; then
+		echo "restore $entry? (y/n)"
+		read ans
+		if [[ "$ans" == "y" ]]; then
+			echo entry "$entry"
+			num=$(echo "$entry" | sed 's|.*:||')
+			echo removing num "$num"
+			path=$(echo "$entry" | sed 's|:.*||')
+			dir=$(echo "$entry" | sed 's|/[^/]*:.*||')
+			if [ -d "$dir" ]; then
+				ln "$num" "$path"
+			else
+				ln "$num" "$file"
+				echo "No $dir, Restoring to home catalog."
+			fi
+			rm "$num"
+		fi
+	fi
+done
