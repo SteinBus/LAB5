@@ -23,7 +23,7 @@ if [[ $Flag -ne 0 ]]; then
 		echo "Copied ~/source/$sause to ~/Backup-$date" >> ~/backup-report
 	done
 else
-	echo "New directory wasn't created. Modifying ~/Backup-$lastDate..." >> ~/backup-report
+	echo "Modifying ~/Backup-$lastDate..." >> ~/backup-report
 	for sause in $sources
 	do
 		old=~/Backup-$lastDate/"$sause"
